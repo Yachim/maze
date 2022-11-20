@@ -8,7 +8,7 @@ function App() {
     
     const [cells, setCells] = useState<CellType[][]>(
         Array(rowCnt).fill(
-            Array(colCnt).fill("empty")
+            Array(colCnt).fill("normal")
         )
     );
 
@@ -27,7 +27,7 @@ function App() {
                 prev = [
                     ...prev,
                     ...Array(diffRowCnt).fill(
-                        Array(colCnt).fill("empty")
+                        Array(colCnt).fill("normal")
                     )
                 ];
             }
@@ -38,7 +38,7 @@ function App() {
             else {
                 prev = prev.map(row => [
                     ...row,
-                    ...Array(diffColCnt).fill("empty")
+                    ...Array(diffColCnt).fill("normal")
                 ]);
             }
 
@@ -58,7 +58,41 @@ function App() {
                 }}
             > 
                 {cells.map((row, rowI) => 
-                    row.map((cell, colI) => <Cell key={rowI * colI} type={cell}/>)
+                    row.map((cell, colI) => 
+                        <Cell
+                            key={`${rowI}-${colI}`}
+                            type={cell}
+                            click={() => 
+                                setCells(prev => {
+                                    let value = prev[rowI][colI];
+                                    const allValues = new Set(cells.flat());
+
+                                    if (value === "exit" || (
+                                        allValues.has("entrance") &&
+                                        allValues.has("exit")
+                                    )) {
+                                        value = "normal";
+                                    }
+                                    else if (!allValues.has("entrance")) {
+                                        value = "entrance";
+                                    }
+                                    else if (!allValues.has("exit")) {
+                                        value = "exit";
+                                    }
+
+                                    return [
+                                        ...prev.slice(0, rowI),
+                                        [
+                                            ...prev[rowI].slice(0, colI),
+                                            value,
+                                            ...prev[rowI].slice(colI + 1)
+                                        ],
+                                        ...prev.slice(rowI + 1)
+                                    ]
+                                })
+                            }
+                        />
+                    )
                 )}
             </div>
             {/* input container */}
