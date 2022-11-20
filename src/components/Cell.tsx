@@ -1,12 +1,17 @@
-import { CellType } from "../types"
+import { CellData } from "../types"
 
 type CellProps = {
-    type: CellType;
+    data: CellData;
     click: () => void; 
+    edges: ("top" | "bottom" | "left" | "right")[];
+    topBorderClick: () => void;
+    bottomBorderClick: () => void;
+    leftBorderClick: () => void;
+    rightBorderClick: () => void;
 }
 export default function Cell(props: CellProps) {
     let content;
-    if (props.type === "entrance") {
+    if (props.data.type === "entrance") {
         content = ( 
             <svg height="100%" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="Frame 1">
@@ -16,7 +21,7 @@ export default function Cell(props: CellProps) {
             </svg>
         );
     }
-    else if (props.type === "exit") {
+    else if (props.data.type === "exit") {
         content = (
             <svg height="100%" viewBox="0 0 34 42" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="Frame 2">
@@ -29,10 +34,86 @@ export default function Cell(props: CellProps) {
 
     return (
         <div
-            className='aspect-square w-full h-full box-border border border-gray-900 border-solid p-8 flex justify-center content-center'
+            className={`
+                aspect-square
+                w-full
+                h-full
+                box-border
+                border-solid
+                p-10
+                flex
+                justify-center
+                content-center
+                relative
+                border
+                ${props.data.walls.top ? "border-t-gray-900" : "border-t-transparent"}
+                ${props.data.walls.bottom ? "border-b-gray-900" : "border-b-transparent"}
+                ${props.data.walls.left ? "border-l-gray-900" : "border-l-transparent"}
+                ${props.data.walls.right ? "border-r-gray-900" : "border-r-transparent"}
+            `}
             onClick={props.click}
         >
+            {!props.edges.includes("top") && <Wall
+                click={props.topBorderClick}
+                edge="top"
+            />}
+            {!props.edges.includes("bottom") && <Wall
+                click={props.bottomBorderClick}
+                edge="bottom"
+            />}
+            {!props.edges.includes("left") && <Wall
+                click={props.leftBorderClick}
+                edge="left"
+            />}
+            {!props.edges.includes("right") && <Wall
+                click={props.rightBorderClick}
+                edge="right"
+            />}
             {content}
         </div> 
     )
+}
+
+type WallProps = {
+    click: () => void;
+    edge: "top" | "bottom" | "left" | "right";
+}
+function Wall(props: WallProps) {
+    return (
+        <div
+            className={`
+                ${
+                    ["top", "bottom"].includes(props.edge) ?
+                    "w-full h-8 left-0" :
+                    "h-full w-8 top-0"
+                }
+                ${
+                    props.edge === "top" ?
+                    "top-0" :
+                    ""
+                }
+                ${
+                    props.edge === "bottom" ?
+                    "bottom-0" :
+                    ""
+                }
+                ${
+                    props.edge === "left" ?
+                    "left-0" :
+                    ""
+                }
+                ${
+                    props.edge === "right" ?
+                    "right-0" :
+                    ""
+                }
+                absolute
+                hover:bg-gray-200
+            `}
+            onClick={(e) => {
+                props.click();
+                e.stopPropagation()
+            }}
+        ></div>
+    );
 }

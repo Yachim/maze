@@ -1,3 +1,3 @@
-import { CellType } from "./Cell"
+import { CellData } from "./Cell"
 
-export {CellType}
+export {CellData}
