@@ -1,1 +1,1 @@
-export type Cell = "empty" | "wall" | "entrance" | "exit";
+export type CellType = "normal" | "entrance" | "exit";

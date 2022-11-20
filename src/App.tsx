@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
-import { Cell } from './types';
+import {Cell} from './components';
+import { CellType } from './types';
 
 function App() {
     const [rowCnt, setRowCnt] = useState(5);
     const [colCnt, setColCnt] = useState(5)
     
-    const [cells, setCells] = useState<Cell[][]>(
+    const [cells, setCells] = useState<CellType[][]>(
         Array(rowCnt).fill(
             Array(colCnt).fill("empty")
         )
@@ -47,7 +48,39 @@ function App() {
     }, [rowCnt, colCnt])
 
     return (
-        <div className="App">
+        <div> 
+            {/* maze grid container maze grid container  */}
+            <div
+                className="grid"
+                style={{
+                    gridTemplateRows: `repeat(${rowCnt}, minmax(0, 1fr))`,
+                    gridTemplateColumns: `repeat(${colCnt}, minmax(0, 1fr))`
+                }}
+            > 
+                {cells.map((row, rowI) => 
+                    row.map((cell, colI) => <Cell key={rowI * colI} type={cell}/>)
+                )}
+            </div>
+            {/* input container */}
+            <div className="flex gap-4 flex-col">
+                <label htmlFor="row-cnt">Rows: {rowCnt}</label>
+                <input
+                    id="row-cnt"
+                    type="range"
+                    min="3"
+                    max="50"
+                    value={rowCnt}
+                    onChange={e => setRowCnt(+e.target.value)}
+                />
+                <label htmlFor="row-cnt">Columns: {colCnt}</label>
+                <input
+                    type="range"
+                    min="3"
+                    max="50"
+                    value={colCnt}
+                    onChange={e => setColCnt(+e.target.value)}
+                />
+            </div>
         </div>
     )
 }
